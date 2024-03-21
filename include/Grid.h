@@ -16,8 +16,9 @@ class Grid {
   private:
     // On each axis
     Raylib::Vector2 m_size{};
-
     std::vector<Tile> m_data{};
+
+    Raylib::Vector2 m_fruit_coords{};
 
   public:
     Grid(const Raylib::Vector2& size);

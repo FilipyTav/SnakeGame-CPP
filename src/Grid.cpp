@@ -17,7 +17,7 @@ void Grid::draw(const Raylib::Window& window) const {
     for (int row = 0; row < m_size.y; row++) {
         for (int col = 0; col < m_size.x; col++) {
             const Tile tile = this->get_tile(
-                {static_cast<float>(row), static_cast<float>(col)});
+                {static_cast<float>(col), static_cast<float>(row)});
 
             switch (tile) {
             case EMPTY:
@@ -40,7 +40,7 @@ void Grid::draw(const Raylib::Window& window) const {
             const Raylib::Rectangle tile_rec{
                 col * tile_size.x, row * tile_size.y, tile_size.x, tile_size.y};
 
-            // tile_rec.Draw(RED);
+            tile_rec.Draw(color);
 
             DrawRectangleLinesEx(tile_rec, .5, GRAY);
         }
@@ -67,8 +67,11 @@ void Grid::set_tile(const Raylib::Vector2& coords, Tile tile) {
 };
 
 void Grid::gen_fruit() {
+    set_tile(m_fruit_coords, EMPTY);
+
     const int rngn{Random::get(0, m_data.size() - 1)};
 
+    // TODO: use m_fruit_coords instead of this var
     Raylib::Vector2 pos{};
 
     // Column
@@ -85,7 +88,8 @@ void Grid::gen_fruit() {
         return;
     }
 
-    set_tile({pos.x, pos.y}, FRUIT);
+    m_fruit_coords = pos;
+    set_tile(pos, FRUIT);
 };
 
 const Grid::Tile Grid::get_tile(const Raylib::Vector2& coords) const {
