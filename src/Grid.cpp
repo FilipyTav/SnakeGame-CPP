@@ -71,25 +71,21 @@ void Grid::gen_fruit() {
 
     const int rngn{Random::get(0, m_data.size() - 1)};
 
-    // TODO: use m_fruit_coords instead of this var
-    Raylib::Vector2 pos{};
-
     // Column
-    pos.x = rngn % static_cast<int>(m_size.x);
+    m_fruit_coords.x = rngn % static_cast<int>(m_size.x);
 
     // Pos = (row * width) + col
     // row = (Pos - col) / w
     // pos.y = static_cast<int>((rngn - pos.x) / m_size.x);
 
-    pos.y = static_cast<int>(rngn / 20);
+    m_fruit_coords.y = static_cast<int>(rngn / 20);
 
     if (m_data[rngn] == Tile::SNAKE) {
         gen_fruit();
         return;
     }
 
-    m_fruit_coords = pos;
-    set_tile(pos, FRUIT);
+    set_tile(m_fruit_coords, FRUIT);
 };
 
 const Grid::Tile Grid::get_tile(const Raylib::Vector2& coords) const {
