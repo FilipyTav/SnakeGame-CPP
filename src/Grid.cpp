@@ -33,7 +33,7 @@ void Grid::draw(const Raylib::Window& window) const {
                 break;
 
             default:
-                std::cout << "Grid::draw() - Incorrect tile\n";
+                std::cerr << "Grid::draw() - Incorrect tile\n";
                 return;
             }
 
@@ -67,7 +67,8 @@ void Grid::set_tile(const Raylib::Vector2& coords, Tile tile) {
 };
 
 void Grid::gen_fruit() {
-    set_tile(m_fruit_coords, EMPTY);
+    if (this->get_tile(m_fruit_coords) == Tile::FRUIT)
+        this->set_tile(m_fruit_coords, EMPTY);
 
     const int rngn{Random::get(0, m_data.size() - 1)};
 
@@ -80,14 +81,46 @@ void Grid::gen_fruit() {
 
     m_fruit_coords.y = static_cast<int>(rngn / 20);
 
-    if (m_data[rngn] == Tile::SNAKE) {
+    if (this->get_tile(m_fruit_coords) == Tile::SNAKE) {
         gen_fruit();
         return;
     }
 
-    set_tile(m_fruit_coords, FRUIT);
+    this->set_tile(m_fruit_coords, Tile::FRUIT);
 };
 
 const Grid::Tile Grid::get_tile(const Raylib::Vector2& coords) const {
     return m_data[coords.y * m_size.x + coords.x];
+};
+
+const Raylib::Vector2& Grid::get_size() const { return m_size; };
+
+const Raylib::Vector2 Grid::get_adjacent_tile(const Raylib::Vector2& coords,
+                                              const Direction direction) const {
+    Raylib::Vector2 result{coords};
+
+    switch (direction) {
+    case UP:
+        result.y = coords.y <= 0 ? this->get_size().y - 1 : coords.y - 1;
+        break;
+
+    case DOWN:
+        result.y = static_cast<int>(coords.y + 1) %
+                   static_cast<int>(this->get_size().y);
+        break;
+
+    case LEFT:
+        result.x = coords.x <= 0 ? this->get_size().x - 1 : coords.x - 1;
+        break;
+
+    case RIGHT:
+        result.x = static_cast<int>(coords.x + 1) %
+                   static_cast<int>(this->get_size().x);
+        break;
+
+    default:
+        std::cerr << "Snake::get_adjacent_tile() - Incorrect direction\n";
+    }
+
+    return result;
 };

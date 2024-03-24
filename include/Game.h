@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Grid.h"
-#include "Vector2.hpp"
+#include "Player.h"
 #include "raylib-cpp.hpp"
 #include "raylib.h"
 #include <vector>
@@ -9,8 +9,10 @@
 namespace Raylib = raylib;
 
 class Game {
+  private:
   public:
     Grid grid{{20, 15}};
+    Snake snake{};
 
   public:
     Game(const Raylib::Vector2& grid_size);

@@ -5,6 +5,7 @@
 #include "raylib-cpp.hpp"
 #include "raylib.h"
 #include <array>
+#include <iostream>
 #include <vector>
 
 namespace Raylib = raylib;
@@ -12,6 +13,7 @@ namespace Raylib = raylib;
 class Grid {
   public:
     enum Tile { EMPTY, SNAKE, FRUIT };
+    enum Direction { UP, DOWN, LEFT, RIGHT, MAX_DIRECTIONS };
 
   private:
     // On each axis
@@ -38,9 +40,14 @@ class Grid {
     void set_tile(const Raylib::Vector2& coords, Tile tile);
 
     // Get tile at position
-    // {col, row}
+    // {col, row} - {x, y}
     const Tile get_tile(const Raylib::Vector2& coords) const;
 
     // Random available tile
     void gen_fruit();
+
+    const Raylib::Vector2& get_size() const;
+
+    const Raylib::Vector2 get_adjacent_tile(const Raylib::Vector2& coords,
+                                            const Direction direction) const;
 };

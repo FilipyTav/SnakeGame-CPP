@@ -11,6 +11,8 @@ project(
         LANGUAGES CXX
        )
 
+set (CMAKE_CXX_STANDARD 20)
+
 set(SRC_DIR "src")
 set(BUILD_DIR "build")
 set(BIN_DIR "bin")
