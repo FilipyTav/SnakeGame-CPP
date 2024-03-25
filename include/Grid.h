@@ -48,6 +48,7 @@ class Grid {
 
     const Raylib::Vector2& get_size() const;
 
-    const Raylib::Vector2 get_adjacent_tile(const Raylib::Vector2& coords,
-                                            const Direction direction) const;
+    const Raylib::Vector2 get_tile_relative(const Raylib::Vector2& coords,
+                                            const Direction direction,
+                                            const int amount = 1) const;
 };

@@ -1,5 +1,7 @@
 #include "Grid.h"
 #include "Rectangle.hpp"
+#include "Utils/Numbers.h"
+#include "Utils/Redefinitions.h"
 #include <iostream>
 #include <raylib.h>
 
@@ -95,27 +97,29 @@ const Grid::Tile Grid::get_tile(const Raylib::Vector2& coords) const {
 
 const Raylib::Vector2& Grid::get_size() const { return m_size; };
 
-const Raylib::Vector2 Grid::get_adjacent_tile(const Raylib::Vector2& coords,
-                                              const Direction direction) const {
-    Raylib::Vector2 result{coords};
+const Raylib::Vector2 Grid::get_tile_relative(const Raylib::Vector2& coords,
+                                              const Direction direction,
+                                              const int amount) const {
+    Shy<int> result{coords};
+
+    Shy<int> start{0, 0};
+    Shy<int> limit{this->get_size()};
 
     switch (direction) {
     case UP:
-        result.y = coords.y <= 0 ? this->get_size().y - 1 : coords.y - 1;
+        result.y = numbers::wrap_range(coords.y - amount, start.y, limit.y);
         break;
 
     case DOWN:
-        result.y = static_cast<int>(coords.y + 1) %
-                   static_cast<int>(this->get_size().y);
+        result.y = numbers::wrap_range(coords.y + amount, start.y, limit.y);
         break;
 
     case LEFT:
-        result.x = coords.x <= 0 ? this->get_size().x - 1 : coords.x - 1;
+        result.x = numbers::wrap_range(coords.x - amount, start.x, limit.x);
         break;
 
     case RIGHT:
-        result.x = static_cast<int>(coords.x + 1) %
-                   static_cast<int>(this->get_size().x);
+        result.x = numbers::wrap_range(coords.x + amount, start.x, limit.x);
         break;
 
     default:

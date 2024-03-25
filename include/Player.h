@@ -24,57 +24,27 @@ class Snake {
     // In frames
     int m_speed{};
 
-    // Eaten fruits + 1
+    // Fruits eaten + 1
     int m_length{1};
 
-    Direction invert_direction(const Direction direction) {
-        switch (direction) {
-            using enum Direction;
-
-        case UP:
-            return DOWN;
-        case DOWN:
-            return UP;
-
-        case LEFT:
-            return RIGHT;
-        case RIGHT:
-            return LEFT;
-
-        default:
-            std::cerr << "Snake::invert_direction() - Incorrect direction\n";
-            return MAX_DIRECTIONS;
-        }
-    };
+    Direction invert_direction(const Direction direction);
 
   public:
-    Snake(const int speed = 4) : m_speed{speed} {};
+    Snake(const int speed = 4);
     Snake(Snake&&) = default;
     Snake(const Snake&) = default;
     Snake& operator=(Snake&&) = default;
     Snake& operator=(const Snake&) = default;
     ~Snake() = default;
 
-    void move(const Grid& grid) {
-        m_body.insert(m_body.begin(), invert_direction(m_direction));
+    // Depends on m_direction
+    void move(const Grid& grid);
 
-        if (m_body.size() + 1 >= m_length) {
-            // TODO: traverse body
-            m_body.pop_back();
-        }
+    const Raylib::Vector2& get_head_pos() const;
 
-        m_head_position = grid.get_adjacent_tile(m_head_position, m_direction);
+    const int get_speed() const;
 
-        std::cout << "coords: (" << m_head_position.x << ", "
-                  << m_head_position.y << ")\n";
-        std::cout << "dir: " << m_direction << "\n\n";
-    };
+    void set_direction(const Direction direction);
 
-    const Raylib::Vector2& get_head_pos() const { return m_head_position; };
-
-    const int get_speed() const { return m_speed; };
-
-    void set_direction(const Direction direction) { m_direction = direction; };
-
-    void eat_fruit() { m_length++; };
+    void eat_fruit();
 };
