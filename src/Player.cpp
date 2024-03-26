@@ -56,7 +56,7 @@ void Snake::set_direction(const Direction direction) {
 };
 
 void Snake::eat_fruit() {
-    std::cout << "Eaten!\n";
-    m_length++;
-    m_body.reserve(m_length);
+    // It instantly worked when changed from vector::reserve.
+    // Why though?
+    m_body.resize(++m_length);
 };
