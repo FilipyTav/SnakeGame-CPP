@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "raylib-cpp.hpp"
 #include "raylib.h"
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -14,17 +15,15 @@ class Snake {
   private:
     using Direction = Grid::Direction;
 
-    Raylib::Vector2 m_head_position{0, 0};
+    Raylib::Vector2 m_head_pos{0, 0};
+    std::vector<Raylib::Vector2> m_body{m_head_pos};
     Direction m_direction{Direction::RIGHT};
-    Direction m_prev_direction{Direction::LEFT};
-
-    // Directions from head to tail
-    std::vector<Direction> m_body{};
+    uint16_t m_movements{};
 
     // In frames
     int m_speed{};
 
-    // Fruits eaten + 1
+    // Fruits eaten + 1(head)
     int m_length{1};
 
     Direction invert_direction(const Direction direction);
@@ -38,7 +37,7 @@ class Snake {
     ~Snake() = default;
 
     // Depends on m_direction
-    void move(const Grid& grid);
+    void move(Grid& grid);
 
     const Raylib::Vector2& get_head_pos() const;
 

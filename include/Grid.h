@@ -46,9 +46,11 @@ class Grid {
     // Random available tile
     void gen_fruit();
 
+    const Raylib::Vector2& get_fruit_coords() const;
+
     const Raylib::Vector2& get_size() const;
 
     const Raylib::Vector2 get_tile_relative(const Raylib::Vector2& coords,
                                             const Direction direction,
-                                            const int amount = 1) const;
+                                            const int step = 1) const;
 };

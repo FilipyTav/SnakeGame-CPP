@@ -33,7 +33,6 @@ int main() {
     bool exit_request{false};
 
     game.grid.gen_fruit();
-    game.grid.print();
 
     // FIX: error on snake movement
     // return 0;
@@ -54,6 +53,7 @@ int main() {
         // Update
         //----------------------------------------------------------------------------------
         {
+            // game.grid.print();
             frames_counter++;
 
             // TODO: update player
@@ -112,5 +112,5 @@ void handle_input(Game& game) {
     //----------------------------------------------------------------------------------
 
     if (IsKeyPressed(KEY_SPACE))
-        game.grid.gen_fruit();
+        game.snake.eat_fruit();
 };

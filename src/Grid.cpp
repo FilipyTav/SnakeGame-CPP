@@ -50,18 +50,41 @@ void Grid::draw(const Raylib::Window& window) const {
 };
 
 void Grid::print() const {
+    std::cout << "//"
+                 "-------------------------------------------------------------"
+                 "---------------------\n";
     for (int row = 0; row < m_size.y; row++) {
         for (int col = 0; col < m_size.x; col++) {
             const Tile tile = this->get_tile(
                 {static_cast<float>(col), static_cast<float>(row)});
 
-            if (tile == Tile::FRUIT)
+            switch (tile) {
+            case SNAKE:
+                /*
+                 * Prints it in yellow
+                 * See: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+                 *
+                 * Also:
+                 * https://stackoverflow.com/questions/2616906/how-do-i-output-coloured-text-to-a-linux-terminal
+                 */
+                std::cout << "| \033[1;33m" << tile << "\033[0m ";
+                break;
+
+            case FRUIT:
+                // Prints it in red
                 std::cout << "| \033[1;31m" << tile << "\033[0m ";
-            else
+                break;
+
+            default:
                 std::cout << "| " << tile << " ";
+                break;
+            }
         }
         std::cout << '\n';
     }
+
+    std::cout << "-------------------------------------------------------------"
+                 "---------------------//\n";
 };
 
 void Grid::set_tile(const Raylib::Vector2& coords, Tile tile) {
@@ -77,9 +100,13 @@ void Grid::gen_fruit() {
     // Column
     m_fruit_coords.x = rngn % static_cast<int>(m_size.x);
 
-    // Pos = (row * width) + col
-    // row = (Pos - col) / w
-    // pos.y = static_cast<int>((rngn - pos.x) / m_size.x);
+    /*
+     * Just to remember how I did this before
+     *
+     * Pos = (row * width) + col
+     * row = (Pos - col) / w
+     * pos.y = static_cast<int>((rngn - pos.x) / m_size.x);
+     */
 
     m_fruit_coords.y = static_cast<int>(rngn / 20);
 
@@ -99,7 +126,7 @@ const Raylib::Vector2& Grid::get_size() const { return m_size; };
 
 const Raylib::Vector2 Grid::get_tile_relative(const Raylib::Vector2& coords,
                                               const Direction direction,
-                                              const int amount) const {
+                                              const int step) const {
     Shy<int> result{coords};
 
     Shy<int> start{0, 0};
@@ -107,19 +134,19 @@ const Raylib::Vector2 Grid::get_tile_relative(const Raylib::Vector2& coords,
 
     switch (direction) {
     case UP:
-        result.y = numbers::wrap_range(coords.y - amount, start.y, limit.y);
+        result.y = numbers::wrap_range(coords.y - step, start.y, limit.y);
         break;
 
     case DOWN:
-        result.y = numbers::wrap_range(coords.y + amount, start.y, limit.y);
+        result.y = numbers::wrap_range(coords.y + step, start.y, limit.y);
         break;
 
     case LEFT:
-        result.x = numbers::wrap_range(coords.x - amount, start.x, limit.x);
+        result.x = numbers::wrap_range(coords.x - step, start.x, limit.x);
         break;
 
     case RIGHT:
-        result.x = numbers::wrap_range(coords.x + amount, start.x, limit.x);
+        result.x = numbers::wrap_range(coords.x + step, start.x, limit.x);
         break;
 
     default:
@@ -127,4 +154,8 @@ const Raylib::Vector2 Grid::get_tile_relative(const Raylib::Vector2& coords,
     }
 
     return result;
+};
+
+const Raylib::Vector2& Grid::get_fruit_coords() const {
+    return m_fruit_coords;
 };
