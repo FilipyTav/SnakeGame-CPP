@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "Utils/Numbers.h"
 
-using Direction = Grid::Direction;
+using Direction = Orientation::Direction;
 
 /* ---------- Private methods ---------- */
 Direction Snake::invert_direction(const Direction direction) {
@@ -27,7 +27,7 @@ Direction Snake::invert_direction(const Direction direction) {
 /* ---------- Public methods ---------- */
 Snake::Snake(const int speed) : m_speed{speed} {};
 
-bool Snake::move(Grid& grid) {
+void Snake::move(Grid& grid) {
     m_body[m_movements] = m_head_pos;
 
     grid.set_tile(m_body[numbers::wrap_range(m_movements + 1, 0, m_length)],
@@ -42,8 +42,6 @@ bool Snake::move(Grid& grid) {
 
         grid.gen_fruit();
     };
-
-    return this->did_lose(grid);
 };
 
 const Raylib::Vector2& Snake::get_head_pos() const { return m_head_pos; };
@@ -51,17 +49,16 @@ const Raylib::Vector2& Snake::get_head_pos() const { return m_head_pos; };
 const int Snake::get_speed() const { return m_speed; };
 
 void Snake::set_direction(const Direction direction) {
-    m_direction = direction;
+    // Going to the opposite direction is an instant loss.
+    // Also kinda annoying.
+    if (invert_direction(direction) != m_direction)
+        m_direction = direction;
 };
 
 void Snake::eat_fruit() {
     // It instantly worked when changed from vector::reserve.
     // Why though?
     m_body.resize(++m_length);
-};
-
-bool Snake::did_lose(const Grid& grid) const {
-    return grid.get_tile(m_head_pos) == Grid::Tile::SNAKE;
 };
 
 void Snake::reset() {
@@ -73,3 +70,7 @@ void Snake::reset() {
     m_body = {m_head_pos};
     m_direction = Direction::RIGHT;
 };
+
+const Snake::DrawType Snake::get_draw_type() const { return m_draw_type; };
+
+const int Snake::get_length() { return m_length; };

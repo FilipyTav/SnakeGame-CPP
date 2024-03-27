@@ -4,6 +4,7 @@
 template <typename T> //
 class Shy : public raylib::Vector2 {
   public:
+    Shy() : Vector2{0, 0} {}
     Shy(T x, T y) : Vector2{static_cast<float>(x), static_cast<float>(y)} {}
     Shy(T x) : Vector2{x, 0} {}
     Shy(const Vector2& vec)

@@ -13,7 +13,8 @@ class Game {
   public:
     Grid grid{{20, 15}};
     Snake snake{};
-    bool lost{};
+    bool lost{false};
+    bool won{false};
 
   public:
     Game(const Raylib::Vector2& grid_size);
@@ -28,5 +29,13 @@ class Game {
         grid.reset();
 
         lost = false;
+    };
+
+    bool did_lose() const { return lost; };
+    bool did_win() const { return won; };
+
+    void update_result() {
+        lost = grid.get_tile(snake.get_head_pos()) == Grid::Tile::SNAKE;
+        won = grid.get_size().x * grid.get_size().y != snake.get_length();
     };
 };

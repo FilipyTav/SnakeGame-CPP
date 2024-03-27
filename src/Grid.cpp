@@ -1,7 +1,9 @@
 #include "Grid.h"
 #include "Rectangle.hpp"
+#include "Utils/Enums.h"
 #include "Utils/Numbers.h"
 #include "Utils/Redefinitions.h"
+#include <algorithm>
 #include <iostream>
 #include <raylib.h>
 
@@ -12,10 +14,10 @@ Grid::Grid(const Raylib::Vector2& size) : m_size{size} {
 };
 
 void Grid::draw(const Raylib::Window& window) const {
-    Raylib::Vector2 tile_size{window.GetWidth() / m_size.x,
-                              window.GetHeight() / m_size.y};
-
     Raylib::Color color{};
+
+    // In pixels.
+    Shy<int> snake_size{};
 
     for (int row = 0; row < m_size.y; row++) {
         for (int col = 0; col < m_size.x; col++) {
@@ -27,9 +29,15 @@ void Grid::draw(const Raylib::Window& window) const {
                 color = BLANK;
                 break;
 
-            case SNAKE:
+            case SNAKE: {
+                // switch () {
+                // default:
+                //
+                //     break;
+                // }
+
                 color = WHITE;
-                break;
+            } break;
 
             case FRUIT:
                 color = RED;
@@ -40,10 +48,18 @@ void Grid::draw(const Raylib::Window& window) const {
                 return;
             }
 
-            const Raylib::Rectangle tile_rec{
-                col * tile_size.x, row * tile_size.y, tile_size.x, tile_size.y};
+            const Raylib::Rectangle tile_rec{col * m_tile_size.x,
+                                             row * m_tile_size.y, m_tile_size.x,
+                                             m_tile_size.y};
 
-            tile_rec.Draw(color);
+            const float radius{
+                std::min(tile_rec.width / 2, tile_rec.height / 2)};
+
+            DrawCircleV({tile_rec.x + tile_rec.width / 2,
+                         tile_rec.y + tile_rec.height / 2},
+                        radius, color);
+
+            // tile_rec.Draw(color);
 
             DrawRectangleLinesEx(tile_rec, .5, GRAY);
         }
@@ -111,7 +127,7 @@ void Grid::gen_fruit() {
 
     m_fruit_coords.y = static_cast<int>(rngn / 20);
 
-    if (this->get_tile(m_fruit_coords) == Tile::SNAKE) {
+    if (this->get_tile(m_fruit_coords) != Tile::EMPTY) {
         gen_fruit();
         return;
     }
@@ -125,15 +141,17 @@ const Grid::Tile Grid::get_tile(const Raylib::Vector2& coords) const {
 
 const Raylib::Vector2& Grid::get_size() const { return m_size; };
 
-const Raylib::Vector2 Grid::get_tile_relative(const Raylib::Vector2& coords,
-                                              const Direction direction,
-                                              const int step) const {
+const Raylib::Vector2
+Grid::get_tile_relative(const Raylib::Vector2& coords,
+                        const Orientation::Direction direction,
+                        const int step) const {
     Shy<int> result{coords};
 
     Shy<int> start{0, 0};
     Shy<int> limit{this->get_size()};
 
     switch (direction) {
+        using enum Orientation::Direction;
     case UP:
         result.y = numbers::wrap_range(coords.y - step, start.y, limit.y);
         break;
@@ -164,4 +182,9 @@ const Raylib::Vector2& Grid::get_fruit_coords() const {
 void Grid::reset() {
     std::fill(m_data.begin(), m_data.end(), Tile::EMPTY);
     gen_fruit();
+};
+
+void Grid::update_tile_size(const Raylib::Window& window) {
+    m_tile_size = Raylib::Vector2{window.GetWidth() / m_size.x,
+                                  window.GetHeight() / m_size.y};
 };

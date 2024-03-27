@@ -1,7 +1,5 @@
 #pragma once
 
-// TODO: Player control
-
 #include "Grid.h"
 #include "raylib-cpp.hpp"
 #include "raylib.h"
@@ -12,13 +10,27 @@
 namespace Raylib = raylib;
 
 class Snake {
+  public:
+    enum class DrawType {
+        HORIZONTAL, // ⬌
+        VERTICAL,   // ⬍
+        DOWN_RIGHT, // ↳
+        RIGHT_UP,   // ⮥
+        UP_LEFT,    // ↰
+        LEFT_DOWN,  // ⮦
+
+        MAX_DRAW_TYPES,
+    };
+
   private:
-    using Direction = Grid::Direction;
+    using Direction = Orientation::Direction;
 
     Raylib::Vector2 m_head_pos{0, 0};
     std::vector<Raylib::Vector2> m_body{m_head_pos};
     Direction m_direction{Direction::RIGHT};
     uint16_t m_movements{};
+
+    DrawType m_draw_type{DrawType::HORIZONTAL};
 
     // In frames
     int m_speed{};
@@ -38,10 +50,8 @@ class Snake {
 
     /*
      * Depends on m_direction.
-     *
-     * Returns whether or not the snake lost the game on this move.
      */
-    bool move(Grid& grid);
+    void move(Grid& grid);
 
     const Raylib::Vector2& get_head_pos() const;
 
@@ -51,7 +61,9 @@ class Snake {
 
     void eat_fruit();
 
-    bool did_lose(const Grid& grid) const;
-
     void reset();
+
+    const DrawType get_draw_type() const;
+
+    const int get_length();
 };

@@ -22,7 +22,7 @@ int main() {
     window.SetExitKey(KEY_Q);
 
     int frames_counter = 0;
-    Game game{{20, 15}};
+    Game game{{15, 15}};
 
     // Delta time
     float dt{};
@@ -62,6 +62,8 @@ int main() {
         //----------------------------------------------------------------------------------
         {
             if (!paused) {
+                game.grid.update_tile_size(window);
+
                 handle_input(game);
 
                 // game.grid.print();
@@ -71,7 +73,9 @@ int main() {
                     frames_counter = 0;
 
                     // Pauses if the user loses
-                    game.lost = game.snake.move(game.grid);
+                    game.snake.move(game.grid);
+                    game.update_result();
+
                     paused = game.lost;
                 }
 
@@ -118,16 +122,16 @@ void handle_input(Game& game) {
     game.grid.set_tile(game.snake.get_head_pos(), Grid::Tile::EMPTY);
 
     if (IsKeyDown(KEY_W))
-        game.snake.set_direction(Grid::Direction::UP);
+        game.snake.set_direction(Orientation::Direction::UP);
 
     if (IsKeyDown(KEY_A))
-        game.snake.set_direction(Grid::Direction::LEFT);
+        game.snake.set_direction(Orientation::Direction::LEFT);
 
     if (IsKeyDown(KEY_S))
-        game.snake.set_direction(Grid::Direction::DOWN);
+        game.snake.set_direction(Orientation::Direction::DOWN);
 
     if (IsKeyDown(KEY_D))
-        game.snake.set_direction(Grid::Direction::RIGHT);
+        game.snake.set_direction(Orientation::Direction::RIGHT);
 
     game.grid.set_tile(game.snake.get_head_pos(), Grid::Tile::SNAKE);
     //----------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils/Enums.h"
 #include "Utils/Random.h"
 #include "Vector2.hpp"
 #include "raylib-cpp.hpp"
@@ -13,12 +14,13 @@ namespace Raylib = raylib;
 class Grid {
   public:
     enum Tile { EMPTY, SNAKE, FRUIT };
-    enum Direction { UP, DOWN, LEFT, RIGHT, MAX_DIRECTIONS };
 
   private:
     // On each axis
     Raylib::Vector2 m_size{};
     std::vector<Tile> m_data{};
+
+    Raylib::Vector2 m_tile_size{};
 
     Raylib::Vector2 m_fruit_coords{};
 
@@ -50,9 +52,12 @@ class Grid {
 
     const Raylib::Vector2& get_size() const;
 
-    const Raylib::Vector2 get_tile_relative(const Raylib::Vector2& coords,
-                                            const Direction direction,
-                                            const int step = 1) const;
+    const Raylib::Vector2
+    get_tile_relative(const Raylib::Vector2& coords,
+                      const Orientation::Direction direction,
+                      const int step = 1) const;
+
+    void update_tile_size(const Raylib::Window& window);
 
     void reset();
 };
