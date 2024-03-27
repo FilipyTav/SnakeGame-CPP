@@ -29,7 +29,7 @@ class Snake {
     Direction invert_direction(const Direction direction);
 
   public:
-    Snake(const int speed = 7);
+    Snake(const int speed = 10);
     Snake(Snake&&) = default;
     Snake(const Snake&) = default;
     Snake& operator=(Snake&&) = default;

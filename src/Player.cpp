@@ -1,6 +1,5 @@
 #include "Player.h"
 #include "Utils/Numbers.h"
-#include <cstdio>
 
 using Direction = Grid::Direction;
 
@@ -30,6 +29,7 @@ Snake::Snake(const int speed) : m_speed{speed} {};
 
 bool Snake::move(Grid& grid) {
     m_body[m_movements] = m_head_pos;
+
     grid.set_tile(m_body[numbers::wrap_range(m_movements + 1, 0, m_length)],
                   Grid::Tile::EMPTY);
 

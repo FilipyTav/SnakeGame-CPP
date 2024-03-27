@@ -24,6 +24,7 @@ int main() {
     int frames_counter = 0;
     Game game{{20, 15}};
 
+    // Delta time
     float dt{};
     //--------------------------------------------------------------------------------------
 
@@ -33,14 +34,18 @@ int main() {
     bool paused{false};
 
     while (running) {
-        if (window.ShouldClose())
+        if (window.ShouldClose()) {
             exit_request = true;
+            paused = true;
+        }
 
         if (exit_request) {
             if (IsKeyPressed(KEY_Y))
                 running = false;
-            else if (IsKeyPressed(KEY_N))
+            else if (IsKeyPressed(KEY_N)) {
                 exit_request = false;
+                paused = !paused;
+            }
         }
 
         if (paused) {
@@ -53,16 +58,15 @@ int main() {
             }
         }
 
-        handle_input(game);
-
         // Update
         //----------------------------------------------------------------------------------
         {
             if (!paused) {
+                handle_input(game);
+
                 // game.grid.print();
                 frames_counter++;
 
-                // TODO: update player
                 if (frames_counter >= (60 / game.snake.get_speed())) {
                     frames_counter = 0;
 
