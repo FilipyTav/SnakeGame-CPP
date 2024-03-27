@@ -1,15 +1,14 @@
 #include "Game.h"
 #include "raylib-cpp.hpp"
 #include "raylib.h"
-#include <concepts>
 #include <cstdlib>
-#include <iostream>
 
 const std::string root_path = std::string(GetApplicationDirectory()) + "../";
 
 namespace Raylib = raylib;
 
 void handle_input(Game& game);
+void pause(bool condition);
 
 int main() {
     // Initialization
@@ -28,14 +27,10 @@ int main() {
     float dt{};
     //--------------------------------------------------------------------------------------
 
-    // Game loop switch flag
+    // Game loop switch flags
     bool running{true};
     bool exit_request{false};
-
-    game.grid.gen_fruit();
-
-    // FIX: error on snake movement
-    // return 0;
+    bool paused{false};
 
     while (running) {
         if (window.ShouldClose())
@@ -48,22 +43,36 @@ int main() {
                 exit_request = false;
         }
 
+        if (paused) {
+            if (game.lost) {
+                if (IsKeyPressed(KEY_Y)) {
+                    game.reset();
+                    paused = !paused;
+                } else if (IsKeyPressed(KEY_N))
+                    running = false;
+            }
+        }
+
         handle_input(game);
 
         // Update
         //----------------------------------------------------------------------------------
         {
-            // game.grid.print();
-            frames_counter++;
+            if (!paused) {
+                // game.grid.print();
+                frames_counter++;
 
-            // TODO: update player
-            if (frames_counter >= (60 / game.snake.get_speed())) {
-                frames_counter = 0;
+                // TODO: update player
+                if (frames_counter >= (60 / game.snake.get_speed())) {
+                    frames_counter = 0;
 
-                game.snake.move(game.grid);
+                    // Pauses if the user loses
+                    game.lost = game.snake.move(game.grid);
+                    paused = game.lost;
+                }
+
+                dt = GetFrameTime();
             }
-
-            dt = GetFrameTime();
         }
         //----------------------------------------------------------------------------------
 
@@ -72,9 +81,17 @@ int main() {
         {
             window.BeginDrawing();
 
-            window.ClearBackground(BLACK);
+            if (!paused) {
+                window.ClearBackground(BLACK);
 
-            game.grid.draw(window);
+                game.grid.draw(window);
+            } else {
+                if (game.lost) {
+                    DrawRectangle(0, 100, GetRenderWidth(), 200, BLACK);
+                    DrawText("You lost! Wanna try again? [Y/N]", 40, 180, 30,
+                             WHITE);
+                }
+            }
 
             if (exit_request) {
                 DrawRectangle(0, 100, GetRenderWidth(), 200, BLACK);

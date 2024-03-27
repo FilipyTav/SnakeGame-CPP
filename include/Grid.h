@@ -53,4 +53,6 @@ class Grid {
     const Raylib::Vector2 get_tile_relative(const Raylib::Vector2& coords,
                                             const Direction direction,
                                             const int step = 1) const;
+
+    void reset();
 };

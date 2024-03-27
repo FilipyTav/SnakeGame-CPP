@@ -36,8 +36,12 @@ class Snake {
     Snake& operator=(const Snake&) = default;
     ~Snake() = default;
 
-    // Depends on m_direction
-    void move(Grid& grid);
+    /*
+     * Depends on m_direction.
+     *
+     * Returns whether or not the snake lost the game on this move.
+     */
+    bool move(Grid& grid);
 
     const Raylib::Vector2& get_head_pos() const;
 
@@ -46,4 +50,8 @@ class Snake {
     void set_direction(const Direction direction);
 
     void eat_fruit();
+
+    bool did_lose(const Grid& grid) const;
+
+    void reset();
 };

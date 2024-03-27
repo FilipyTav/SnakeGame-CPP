@@ -13,6 +13,7 @@ class Game {
   public:
     Grid grid{{20, 15}};
     Snake snake{};
+    bool lost{};
 
   public:
     Game(const Raylib::Vector2& grid_size);
@@ -21,4 +22,11 @@ class Game {
     Game& operator=(Game&&) = default;
     Game& operator=(const Game&) = default;
     ~Game() = default;
+
+    void reset() {
+        snake.reset();
+        grid.reset();
+
+        lost = false;
+    };
 };

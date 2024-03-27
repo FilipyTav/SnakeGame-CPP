@@ -8,6 +8,7 @@
 /* ---------- Public methods ---------- */
 Grid::Grid(const Raylib::Vector2& size) : m_size{size} {
     m_data.resize(size.x * size.y);
+    this->gen_fruit();
 };
 
 void Grid::draw(const Raylib::Window& window) const {
@@ -158,4 +159,9 @@ const Raylib::Vector2 Grid::get_tile_relative(const Raylib::Vector2& coords,
 
 const Raylib::Vector2& Grid::get_fruit_coords() const {
     return m_fruit_coords;
+};
+
+void Grid::reset() {
+    std::fill(m_data.begin(), m_data.end(), Tile::EMPTY);
+    gen_fruit();
 };
