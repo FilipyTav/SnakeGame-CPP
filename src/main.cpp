@@ -49,7 +49,7 @@ int main() {
         }
 
         if (paused) {
-            if (game.lost) {
+            if (game.did_lose()) {
                 if (IsKeyPressed(KEY_Y)) {
                     game.reset();
                     paused = !paused;
@@ -76,7 +76,7 @@ int main() {
                     game.snake.move(game.grid);
                     game.update_result();
 
-                    paused = game.lost;
+                    paused = game.did_lose();
                 }
 
                 dt = GetFrameTime();
@@ -94,7 +94,7 @@ int main() {
 
                 game.grid.draw(window);
             } else {
-                if (game.lost) {
+                if (game.did_lose()) {
                     DrawRectangle(0, 100, GetRenderWidth(), 200, BLACK);
                     DrawText("You lost! Wanna try again? [Y/N]", 40, 180, 30,
                              WHITE);
@@ -122,16 +122,20 @@ void handle_input(Game& game) {
     game.grid.set_tile(game.snake.get_head_pos(), Grid::Tile::EMPTY);
 
     if (IsKeyDown(KEY_W))
-        game.snake.set_direction(Orientation::Direction::UP);
+        game.grid.set_draw_type(
+            game.snake.set_direction(Orientation::Direction::UP));
 
     if (IsKeyDown(KEY_A))
-        game.snake.set_direction(Orientation::Direction::LEFT);
+        game.grid.set_draw_type(
+            game.snake.set_direction(Orientation::Direction::LEFT));
 
     if (IsKeyDown(KEY_S))
-        game.snake.set_direction(Orientation::Direction::DOWN);
+        game.grid.set_draw_type(
+            game.snake.set_direction(Orientation::Direction::DOWN));
 
     if (IsKeyDown(KEY_D))
-        game.snake.set_direction(Orientation::Direction::RIGHT);
+        game.grid.set_draw_type(
+            game.snake.set_direction(Orientation::Direction::RIGHT));
 
     game.grid.set_tile(game.snake.get_head_pos(), Grid::Tile::SNAKE);
     //----------------------------------------------------------------------------------

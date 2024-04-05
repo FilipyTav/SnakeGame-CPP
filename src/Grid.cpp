@@ -4,8 +4,11 @@
 #include "Utils/Numbers.h"
 #include "Utils/Redefinitions.h"
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <raylib.h>
+#include <unordered_map>
+#include <vector>
 
 /* ---------- Public methods ---------- */
 Grid::Grid(const Raylib::Vector2& size) : m_size{size} {
@@ -16,13 +19,85 @@ Grid::Grid(const Raylib::Vector2& size) : m_size{size} {
 void Grid::draw(const Raylib::Window& window) const {
     Raylib::Color color{};
 
-    // In pixels.
-    Shy<int> snake_size{};
+    using enum Draw::Snake;
 
     for (int row = 0; row < m_size.y; row++) {
         for (int col = 0; col < m_size.x; col++) {
             const Tile tile = this->get_tile(
                 {static_cast<float>(col), static_cast<float>(row)});
+
+            const Raylib::Rectangle tile_rec{col * m_tile_size.x,
+                                             row * m_tile_size.y, m_tile_size.x,
+                                             m_tile_size.y};
+
+            // In pixels.
+            float snake_size{std::min(tile_rec.width / 3, tile_rec.height / 3)};
+
+            Vector2 tile_rec_mid{tile_rec.x + tile_rec.width / 2,
+                                 tile_rec.y + tile_rec.height / 2};
+
+            using Direction = Orientation::Direction;
+            /*
+             * first: start
+             * second: end
+             *
+             * 0: Horizontal
+             * 1: Vertical
+             */
+            std::array<std::pair<Raylib::Rectangle, Raylib::Rectangle>, 2>
+                points{{
+                    {// Horizontal
+                     {tile_rec.x, tile_rec_mid.y - snake_size / 2,
+                      tile_rec.width / 2 + snake_size / 2, snake_size},
+                     {tile_rec.x + tile_rec.width / 2 - snake_size / 2,
+                      tile_rec_mid.y - snake_size / 2,
+                      tile_rec.width / 2 + snake_size / 2, snake_size}},
+
+                    {// Vertical
+                     {tile_rec_mid.x - snake_size / 2, tile_rec.y, snake_size,
+                      tile_rec.height / 2},
+                     {tile_rec_mid.x - snake_size / 2,
+                      tile_rec.y + tile_rec.height / 2, snake_size,
+                      tile_rec.height / 2}},
+                }};
+
+            // Stores the vertices of the shapes
+            std::unordered_map<Draw::Snake, std::array<Raylib::Rectangle, 2>>
+                vertices{{HORIZONTAL,
+                          {
+                              points[static_cast<int>(HORIZONTAL)].first,
+                              points[static_cast<int>(HORIZONTAL)].second,
+                          }},
+
+                         {VERTICAL,
+                          {
+                              points[static_cast<int>(VERTICAL)].first,
+                              points[static_cast<int>(VERTICAL)].second,
+                          }},
+
+                         {DOWN_RIGHT,
+                          {
+                              points[static_cast<int>(VERTICAL)].first,
+                              points[static_cast<int>(HORIZONTAL)].second,
+                          }},
+
+                         {RIGHT_UP,
+                          {
+                              points[static_cast<int>(HORIZONTAL)].first,
+                              points[static_cast<int>(VERTICAL)].first,
+                          }},
+
+                         {UP_LEFT,
+                          {
+                              points[static_cast<int>(HORIZONTAL)].first,
+                              points[static_cast<int>(VERTICAL)].second,
+                          }},
+
+                         {LEFT_DOWN,
+                          {
+                              points[static_cast<int>(HORIZONTAL)].second,
+                              points[static_cast<int>(VERTICAL)].second,
+                          }}};
 
             switch (tile) {
             case EMPTY:
@@ -30,34 +105,30 @@ void Grid::draw(const Raylib::Window& window) const {
                 break;
 
             case SNAKE: {
-                // switch () {
-                // default:
-                //
-                //     break;
-                // }
-
                 color = WHITE;
+
+                tile_rec.Draw(BLUE);
+
+                for (auto rec : vertices[m_draw_type]) {
+                    rec.Draw(color);
+                }
             } break;
 
-            case FRUIT:
+            case FRUIT: {
                 color = RED;
-                break;
+
+                const float radius{
+                    std::min(tile_rec.width / 2, tile_rec.height / 2)};
+
+                DrawCircleV({tile_rec.x + tile_rec.width / 2,
+                             tile_rec.y + tile_rec.height / 2},
+                            radius, color);
+            } break;
 
             default:
                 std::cerr << "Grid::draw() - Incorrect tile\n";
                 return;
             }
-
-            const Raylib::Rectangle tile_rec{col * m_tile_size.x,
-                                             row * m_tile_size.y, m_tile_size.x,
-                                             m_tile_size.y};
-
-            const float radius{
-                std::min(tile_rec.width / 2, tile_rec.height / 2)};
-
-            DrawCircleV({tile_rec.x + tile_rec.width / 2,
-                         tile_rec.y + tile_rec.height / 2},
-                        radius, color);
 
             // tile_rec.Draw(color);
 
@@ -79,7 +150,8 @@ void Grid::print() const {
             case SNAKE:
                 /*
                  * Prints it in yellow
-                 * See: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+                 * See:
+                 * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
                  *
                  * Also:
                  * https://stackoverflow.com/questions/2616906/how-do-i-output-coloured-text-to-a-linux-terminal
@@ -187,4 +259,12 @@ void Grid::reset() {
 void Grid::update_tile_size(const Raylib::Window& window) {
     m_tile_size = Raylib::Vector2{window.GetWidth() / m_size.x,
                                   window.GetHeight() / m_size.y};
+};
+
+const Grid::SnakeDrawType Grid::get_draw_type() const { return m_draw_type; };
+void Grid::set_draw_type(Grid::SnakeDrawType type) {
+    if (type != m_draw_type)
+        std::cout << "Draw type: " << static_cast<int>(type) << '\n';
+
+    m_draw_type = type;
 };

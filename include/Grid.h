@@ -13,9 +13,15 @@ namespace Raylib = raylib;
 
 class Grid {
   public:
-    enum Tile { EMPTY, SNAKE, FRUIT };
+    enum Tile { EMPTY, SNAKE, FRUIT, MAX_TILES };
 
   private:
+    using SnakeDrawType = Draw::Snake;
+
+    // FIX: Should be on Snake class, but that would cause a circular
+    // dependency
+    SnakeDrawType m_draw_type{SnakeDrawType::HORIZONTAL};
+
     // On each axis
     Raylib::Vector2 m_size{};
     std::vector<Tile> m_data{};
@@ -58,6 +64,9 @@ class Grid {
                       const int step = 1) const;
 
     void update_tile_size(const Raylib::Window& window);
+
+    const SnakeDrawType get_draw_type() const;
+    void set_draw_type(SnakeDrawType type);
 
     void reset();
 };

@@ -10,27 +10,17 @@
 namespace Raylib = raylib;
 
 class Snake {
-  public:
-    enum class DrawType {
-        HORIZONTAL, // ⬌
-        VERTICAL,   // ⬍
-        DOWN_RIGHT, // ↳
-        RIGHT_UP,   // ⮥
-        UP_LEFT,    // ↰
-        LEFT_DOWN,  // ⮦
-
-        MAX_DRAW_TYPES,
-    };
-
   private:
     using Direction = Orientation::Direction;
 
     Raylib::Vector2 m_head_pos{0, 0};
+
+    // Position of the tiles composing the body.
+    // Used for reseting a tile after the snakes moves away from it.
     std::vector<Raylib::Vector2> m_body{m_head_pos};
+
     Direction m_direction{Direction::RIGHT};
     uint16_t m_movements{};
-
-    DrawType m_draw_type{DrawType::HORIZONTAL};
 
     // In frames
     int m_speed{};
@@ -48,22 +38,20 @@ class Snake {
     Snake& operator=(const Snake&) = default;
     ~Snake() = default;
 
-    /*
-     * Depends on m_direction.
-     */
+    // Depends on m_direction.
     void move(Grid& grid);
 
     const Raylib::Vector2& get_head_pos() const;
 
     const int get_speed() const;
 
-    void set_direction(const Direction direction);
+    // Returns the type of drawing that should be used for the snake tile,
+    // depending on the current and the next direction
+    Draw::Snake set_direction(const Direction direction);
 
     void eat_fruit();
 
     void reset();
-
-    const DrawType get_draw_type() const;
 
     const int get_length();
 };
