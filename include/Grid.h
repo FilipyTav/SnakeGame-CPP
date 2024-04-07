@@ -13,10 +13,10 @@ namespace Raylib = raylib;
 
 class Grid {
   public:
-    enum Tile { EMPTY, SNAKE, FRUIT, MAX_TILES };
-
   private:
     using SnakeDrawType = Draw::Snake;
+    using TileType = Draw::TileType;
+    using Tile = Draw::Tile;
 
     // FIX: Should be on Snake class, but that would cause a circular
     // dependency
@@ -24,7 +24,7 @@ class Grid {
 
     // On each axis
     Raylib::Vector2 m_size{};
-    std::vector<Tile> m_data{};
+    std::vector<TileType> m_data{};
 
     Raylib::Vector2 m_tile_size{};
 
@@ -45,11 +45,11 @@ class Grid {
     void print() const;
 
     // Change tile at coords
-    void set_tile(const Raylib::Vector2& coords, Tile tile);
+    void set_tile(const Raylib::Vector2& coords, TileType tile);
 
     // Get tile at position
     // {col, row} - {x, y}
-    const Tile get_tile(const Raylib::Vector2& coords) const;
+    const TileType get_tile(const Raylib::Vector2& coords) const;
 
     // Random available tile
     void gen_fruit();

@@ -35,7 +35,7 @@ void Snake::move(Grid& grid) {
     m_movements = (m_movements + 1) % m_length;
 
     // EMPTY out the oldest body coord
-    grid.set_tile(m_body[m_movements], Grid::Tile::EMPTY);
+    grid.set_tile(m_body[m_movements], Draw::Tile::EMPTY);
 
     m_head_pos = grid.get_tile_relative(m_head_pos, m_direction, 1);
 

@@ -66,7 +66,6 @@ int main() {
 
                 handle_input(game);
 
-                // game.grid.print();
                 frames_counter++;
 
                 if (frames_counter >= (60 / game.snake.get_speed())) {
@@ -92,6 +91,7 @@ int main() {
             if (!paused) {
                 window.ClearBackground(BLACK);
 
+                // game.grid.print();
                 game.grid.draw(window);
             } else {
                 if (game.did_lose()) {
@@ -119,7 +119,7 @@ cleanup:
 void handle_input(Game& game) {
     // Snake movement
     //----------------------------------------------------------------------------------
-    game.grid.set_tile(game.snake.get_head_pos(), Grid::Tile::EMPTY);
+    game.grid.set_tile(game.snake.get_head_pos(), Draw::Tile::EMPTY);
 
     if (IsKeyDown(KEY_W))
         game.grid.set_draw_type(
@@ -137,7 +137,7 @@ void handle_input(Game& game) {
         game.grid.set_draw_type(
             game.snake.set_direction(Orientation::Direction::RIGHT));
 
-    game.grid.set_tile(game.snake.get_head_pos(), Grid::Tile::SNAKE);
+    game.grid.set_tile(game.snake.get_head_pos(), game.grid.get_draw_type());
     //----------------------------------------------------------------------------------
 
     if (IsKeyPressed(KEY_SPACE))

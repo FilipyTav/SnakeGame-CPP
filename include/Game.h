@@ -36,7 +36,7 @@ class Game {
     bool did_win() const { return m_won; };
 
     void update_result() {
-        m_lost = grid.get_tile(snake.get_head_pos()) == Grid::Tile::SNAKE;
+        m_lost = grid.get_tile(snake.get_head_pos()).is_snake();
         m_won = grid.get_size().x * grid.get_size().y != snake.get_length();
     };
 };
