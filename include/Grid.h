@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/Enums.h"
+#include "Utils/Globals.h"
 #include "Utils/Random.h"
 #include "Vector2.hpp"
 #include "raylib-cpp.hpp"

@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Utils/Globals.h"
 #include "raylib-cpp.hpp"
 #include "raylib.h"
 #include <cstdlib>
@@ -61,10 +62,12 @@ int main() {
         // Update
         //----------------------------------------------------------------------------------
         {
-            if (!paused) {
-                game.grid.update_tile_size(window);
+            game.grid.update_tile_size(window);
 
+            if (!paused) {
                 handle_input(game);
+                game.grid.set_tile(game.snake.get_head_pos(),
+                                   game.grid.get_draw_type());
 
                 frames_counter++;
 
@@ -74,6 +77,10 @@ int main() {
                     // Pauses if the user loses
                     game.snake.move(game.grid);
                     game.update_result();
+
+                    // Resets to VERTICAL or HORIZONTAL after a turn
+                    game.grid.set_draw_type(
+                        game.snake.set_direction(game.snake.get_direction()));
 
                     paused = game.did_lose();
                 }
@@ -88,11 +95,11 @@ int main() {
         {
             window.BeginDrawing();
 
+            game.grid.draw(window);
             if (!paused) {
                 window.ClearBackground(BLACK);
 
                 // game.grid.print();
-                game.grid.draw(window);
             } else {
                 if (game.did_lose()) {
                     DrawRectangle(0, 100, GetRenderWidth(), 200, BLACK);
@@ -119,25 +126,21 @@ cleanup:
 void handle_input(Game& game) {
     // Snake movement
     //----------------------------------------------------------------------------------
-    game.grid.set_tile(game.snake.get_head_pos(), Draw::Tile::EMPTY);
-
-    if (IsKeyDown(KEY_W))
+    if (IsKeyPressed(KEY_W))
         game.grid.set_draw_type(
             game.snake.set_direction(Orientation::Direction::UP));
 
-    if (IsKeyDown(KEY_A))
+    if (IsKeyPressed(KEY_A))
         game.grid.set_draw_type(
             game.snake.set_direction(Orientation::Direction::LEFT));
 
-    if (IsKeyDown(KEY_S))
+    if (IsKeyPressed(KEY_S))
         game.grid.set_draw_type(
             game.snake.set_direction(Orientation::Direction::DOWN));
 
-    if (IsKeyDown(KEY_D))
+    if (IsKeyPressed(KEY_D))
         game.grid.set_draw_type(
             game.snake.set_direction(Orientation::Direction::RIGHT));
-
-    game.grid.set_tile(game.snake.get_head_pos(), game.grid.get_draw_type());
     //----------------------------------------------------------------------------------
 
     if (IsKeyPressed(KEY_SPACE))

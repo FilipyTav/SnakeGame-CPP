@@ -1,13 +1,11 @@
 #include "Grid.h"
 #include "Rectangle.hpp"
-#include "Utils/Enums.h"
+#include "Utils/Globals.h"
 #include "Utils/Numbers.h"
 #include "Utils/Redefinitions.h"
 #include <algorithm>
-#include <array>
 #include <iostream>
 #include <raylib.h>
-#include <unordered_map>
 #include <vector>
 
 /* ---------- Public methods ---------- */
@@ -37,82 +35,17 @@ void Grid::draw(const Raylib::Window& window) const {
                                  tile_rec.y + tile_rec.height / 2};
 
             using Direction = Orientation::Direction;
-            // Easier use of points{}
-            enum hv { H, V };
-            /*
-             * first: start
-             * second: end
-             *
-             * 0: Horizontal
-             * 1: Vertical
-             */
-            std::array<std::pair<Raylib::Rectangle, Raylib::Rectangle>, 2>
-                points{{
-                    {// Horizontal
-                     {tile_rec.x, tile_rec_mid.y - snake_size / 2,
-                      tile_rec.width / 2 + snake_size / 2, snake_size},
-                     {tile_rec.x + tile_rec.width / 2 - snake_size / 2,
-                      tile_rec_mid.y - snake_size / 2,
-                      tile_rec.width / 2 + snake_size / 2, snake_size}},
-
-                    {// Vertical
-                     {tile_rec_mid.x - snake_size / 2, tile_rec.y, snake_size,
-                      tile_rec.height / 2},
-                     {tile_rec_mid.x - snake_size / 2,
-                      tile_rec.y + tile_rec.height / 2, snake_size,
-                      tile_rec.height / 2}},
-                }};
-
-            // Stores the vertices of the shapes
-            std::unordered_map<Draw::Snake, std::array<Raylib::Rectangle, 2>>
-                vertices{{HORIZONTAL,
-                          {
-                              points[static_cast<int>(H)].first,
-                              points[static_cast<int>(H)].second,
-                          }},
-
-                         {VERTICAL,
-                          {
-                              points[static_cast<int>(V)].first,
-                              points[static_cast<int>(V)].second,
-                          }},
-
-                         {DOWN_RIGHT,
-                          {
-                              points[static_cast<int>(V)].first,
-                              points[static_cast<int>(H)].second,
-                          }},
-
-                         {RIGHT_UP,
-                          {
-                              points[static_cast<int>(H)].first,
-                              points[static_cast<int>(V)].first,
-                          }},
-
-                         {UP_LEFT,
-                          {
-                              points[static_cast<int>(H)].first,
-                              points[static_cast<int>(V)].second,
-                          }},
-
-                         {LEFT_DOWN,
-                          {
-                              points[static_cast<int>(H)].second,
-                              points[static_cast<int>(V)].second,
-                          }}};
 
             if (tile.is_snake()) {
                 color = WHITE;
 
-                tile_rec.Draw(BLUE);
-
-                for (auto rec : vertices[m_draw_type]) {
+                for (auto rec : Draw::get_composing_rects(
+                         tile.as_snake(), tile_rec, tile_rec_mid, snake_size)) {
                     rec.Draw(color);
                 }
             } else
                 switch (tile.value) {
                     using enum Draw::Tile;
-                    using enum Draw::Snake;
 
                 case EMPTY:
                     color = BLANK;
@@ -263,6 +196,7 @@ const Raylib::Vector2& Grid::get_fruit_coords() const {
 };
 
 void Grid::reset() {
+    m_draw_type = Draw::Snake::HORIZONTAL;
     std::fill(m_data.begin(), m_data.end(), Tile::EMPTY);
     gen_fruit();
 };
@@ -274,8 +208,8 @@ void Grid::update_tile_size(const Raylib::Window& window) {
 
 const Grid::SnakeDrawType Grid::get_draw_type() const { return m_draw_type; };
 void Grid::set_draw_type(Grid::SnakeDrawType type) {
-    if (type != m_draw_type)
-        std::cout << "Draw type: " << static_cast<int>(type) << '\n';
+    // if (type != m_draw_type)
+    //     std::cout << "Changed draw type!\n";
 
     m_draw_type = type;
 };

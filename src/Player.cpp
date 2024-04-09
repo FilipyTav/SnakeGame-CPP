@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "Utils/Enums.h"
+#include "Utils/Globals.h"
 
 using Direction = Orientation::Direction;
 
@@ -34,8 +34,9 @@ void Snake::move(Grid& grid) {
 
     m_movements = (m_movements + 1) % m_length;
 
-    // EMPTY out the oldest body coord
-    grid.set_tile(m_body[m_movements], Draw::Tile::EMPTY);
+    // EMPTY out the oldest body coord(tail)
+    if (grid.get_tile(m_body[m_movements]).is_snake())
+        grid.set_tile(m_body[m_movements], Draw::Tile::EMPTY);
 
     m_head_pos = grid.get_tile_relative(m_head_pos, m_direction, 1);
 
@@ -61,10 +62,12 @@ Draw::Snake Snake::set_direction(const Direction direction) {
         case UP:
         case DOWN:
             draw_type = VERTICAL;
+            break;
 
         case LEFT:
         case RIGHT:
             draw_type = HORIZONTAL;
+            break;
 
         default:
             break;
@@ -81,17 +84,23 @@ Draw::Snake Snake::set_direction(const Direction direction) {
         if (m_direction == UP || direction == DOWN) {
             if (direction == LEFT || m_direction == RIGHT) {
                 draw_type = UP_LEFT;
+                std::cout << "UL\n";
             } else if (direction == RIGHT || m_direction == LEFT) {
-                draw_type = RIGHT_UP;
+                draw_type = LEFT_DOWN;
+                std::cout << "LD\n";
             }
         } else if (m_direction == DOWN || direction == UP) {
             if (direction == LEFT || m_direction == RIGHT) {
-                draw_type = LEFT_DOWN;
+                draw_type = RIGHT_UP;
+                std::cout << "RU\n";
             } else if (direction == RIGHT || m_direction == LEFT) {
                 draw_type = DOWN_RIGHT;
+                std::cout << "DR\n";
             }
         }
     }
+
+    std::cout << '\n';
 
     m_direction = direction;
 
@@ -115,3 +124,5 @@ void Snake::reset() {
 };
 
 const int Snake::get_length() { return m_length; };
+
+Snake::Direction Snake::get_direction() { return m_direction; };
