@@ -25,18 +25,10 @@ class Game {
     Game& operator=(const Game&) = default;
     ~Game() = default;
 
-    void reset() {
-        snake.reset();
-        grid.reset();
+    void reset();
 
-        m_lost = false;
-    };
+    bool did_lose() const;
+    bool did_win() const;
 
-    bool did_lose() const { return m_lost; };
-    bool did_win() const { return m_won; };
-
-    void update_result() {
-        m_lost = grid.get_tile(snake.get_head_pos()).is_snake();
-        m_won = grid.get_size().x * grid.get_size().y != snake.get_length();
-    };
+    void update_result();
 };

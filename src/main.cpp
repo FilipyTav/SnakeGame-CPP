@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "Utils/Globals.h"
 #include "raylib-cpp.hpp"
-#include "raylib.h"
 #include <cstdlib>
 
 const std::string root_path = std::string(GetApplicationDirectory()) + "../";
