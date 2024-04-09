@@ -17,8 +17,8 @@ set(SRC_DIR "src")
 set(BUILD_DIR "build")
 set(BIN_DIR "bin")
 set(INC_DIRS
-    "include"
-    "~/Documents/Coding/GameDev/Raylib/cpp/include/"
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/include/raylib-cpp"
     )
 
 set(CMAKE_BUILD_TYPE "Debug")
